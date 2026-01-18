@@ -1,20 +1,12 @@
-import streamlit as st
-from streamlit_gsheets import GSheetsConnection
-import pandas as pd
-import plotly.express as px
-from datetime import datetime
+# Configuração simples
+st.set_page_config(page_title="Controlo Diabetes", layout="wide")
 
-st.set_page_config(page_title="Controlo Diabetes (Cloud)", layout="wide")
-
-# Ligação ao Google Sheets
+# Ligação sem necessidade de ficheiro JSON nos secrets
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# Função para ler dados
 def carregar_dados():
-    try:
-        return conn.read(ttl="0s") # ttl=0 para ler dados frescos sempre
-    except:
-        return pd.DataFrame(columns=['Data/Hora', 'Glicémia (mg/dL)', 'Insulina (U)', 'Notas'])
+    # Lê a folha usando o URL que está nos secrets
+    return conn.read(ttl="0s")
 
 df = carregar_dados()
 
@@ -56,3 +48,4 @@ if not df.empty:
     st.dataframe(df.sort_values('Data/Hora', ascending=False), use_container_width=True)
 else:
     st.info("A folha de cálculo está vazia. Começa a registar!")
+
